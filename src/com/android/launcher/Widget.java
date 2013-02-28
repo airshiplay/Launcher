@@ -16,8 +16,7 @@
 
 package com.android.launcher;
 
-import android.content.ContentValues;
-import android.graphics.Bitmap;
+import com.airshiplay.launcher.R;
 
 /**
  * Represents one instance of a Launcher widget, such as search.

@@ -16,14 +16,26 @@
 
 package com.android.launcher;
 
+import static android.util.Log.d;
+import static android.util.Log.e;
+import static android.util.Log.w;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.LinkedList;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ISearchManager;
 import android.app.SearchManager;
-import android.app.StatusBarManager;
 import android.app.WallpaperInfo;
 import android.app.WallpaperManager;
+import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -31,8 +43,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.Intent.ShortcutIconResource;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.LabeledIntent;
 import android.content.pm.PackageManager;
@@ -50,14 +62,11 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.MessageQueue;
 import android.os.Parcelable;
-import android.os.RemoteException;
-import android.os.ServiceManager;
 import android.provider.LiveFolders;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.TextKeyListener;
-import static android.util.Log.*;
 import android.util.SparseArray;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -65,24 +74,16 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProviderInfo;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.DataInputStream;
+import com.airshiplay.launcher.R;
 
 /**
  * Default launcher application.
@@ -407,17 +408,17 @@ public final class Launcher extends Activity implements View.OnClickListener, On
         if (mIsNewIntent) {
             // Post to a handler so that this happens after the search dialog tries to open
             // itself again.
-            mWorkspace.post(new Runnable() {
-                public void run() {
-                    ISearchManager searchManagerService = ISearchManager.Stub.asInterface(
-                            ServiceManager.getService(Context.SEARCH_SERVICE));
-                    try {
-                        searchManagerService.stopSearch();
-                    } catch (RemoteException e) {
-                        e(LOG_TAG, "error stopping search", e);
-                    }    
-                }
-            });
+//            mWorkspace.post(new Runnable() {//lisve
+//                public void run() {
+//                    ISearchManager searchManagerService = ISearchManager.Stub.asInterface(
+//                            ServiceManager.getService(Context.SEARCH_SERVICE));
+//                    try {
+//                        searchManagerService.stopSearch();
+//                    } catch (RemoteException e) {
+//                        e(LOG_TAG, "error stopping search", e);
+//                    }    
+//                }
+//            });
         }
         
         mIsNewIntent = false;
@@ -1002,7 +1003,7 @@ public final class Launcher extends Activity implements View.OnClickListener, On
         }
         if (appSearchData == null) {
             appSearchData = new Bundle();
-            appSearchData.putString(SearchManager.SOURCE, "launcher-search");
+            //appSearchData.putString(SearchManager.SOURCE, "launcher-search");//lisve
         }
 
         final SearchManager searchManager =
@@ -1053,7 +1054,7 @@ public final class Launcher extends Activity implements View.OnClickListener, On
                 .setIcon(android.R.drawable.ic_search_category_default)
                 .setAlphabeticShortcut(SearchManager.MENU_KEY);
         menu.add(0, MENU_NOTIFICATIONS, 0, R.string.menu_notifications)
-                .setIcon(com.android.internal.R.drawable.ic_menu_notifications)
+                .setIcon(R.drawable.ic_menu_notifications)
                 .setAlphabeticShortcut('N');
 
         final Intent settings = new Intent(android.provider.Settings.ACTION_SETTINGS);
@@ -1312,10 +1313,10 @@ public final class Launcher extends Activity implements View.OnClickListener, On
     }
 
     private void showNotifications() {
-        final StatusBarManager statusBar = (StatusBarManager) getSystemService(STATUS_BAR_SERVICE);
-        if (statusBar != null) {
-            statusBar.expand();
-        }
+//        final StatusBarManager statusBar = (StatusBarManager) getSystemService(STATUS_BAR_SERVICE);
+//        if (statusBar != null) {
+//            statusBar.expand();
+//        }//lisve
     }
 
     private void startWallpaper() {

@@ -23,6 +23,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import com.airshiplay.launcher.R;
+
 /**
  * {@inheritDoc}
  */
@@ -75,7 +77,7 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
         private int mOriginalWindowAttachCount;
 
         public void run() {
-            if ((mParent != null) && hasWindowFocus()
+            if ((getParent() != null) && hasWindowFocus()
                     && mOriginalWindowAttachCount == getWindowAttachCount()
                     && !mHasPerformedLongPress) {
                 if (performLongClick()) {

@@ -16,7 +16,7 @@
 
 <com.android.launcher.CellLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res/com.android.launcher"
+    xmlns:launcher="http://schemas.android.com/apk/res/com.airshiplay.launcher"
 
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"

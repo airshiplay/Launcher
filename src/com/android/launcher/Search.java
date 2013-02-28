@@ -16,6 +16,7 @@
 
 package com.android.launcher;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +40,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.airshiplay.launcher.R;
 
 public class Search extends LinearLayout 
         implements OnClickListener, OnKeyListener, OnLongClickListener {
@@ -192,7 +195,7 @@ public class Search extends LinearLayout
                     Configuration.HARDKEYBOARDHIDDEN_YES) {
                 InputMethodManager inputManager = (InputMethodManager)
                         getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputManager.showSoftInputUnchecked(0, null);
+                //inputManager.showSoftInputUnchecked(0, null);
             }
             
             // Start the animation, unless it has already started.

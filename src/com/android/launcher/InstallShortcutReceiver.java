@@ -17,11 +17,13 @@
 package com.android.launcher;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ContentResolver;
 import android.database.Cursor;
 import android.widget.Toast;
+
+import com.airshiplay.launcher.R;
 
 public class InstallShortcutReceiver extends BroadcastReceiver {
     private static final String ACTION_INSTALL_SHORTCUT =

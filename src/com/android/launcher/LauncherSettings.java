@@ -95,19 +95,22 @@ class LauncherSettings {
      * {@link com.android.settings.LauncherAppWidgetBinder} as needed.
      */
     static final class Favorites implements BaseLauncherColumns {
+    	static final String AUTHORITY="com.android.launcher.settings";
         /**
          * The content:// style URL for this table
          */
         static final Uri CONTENT_URI = Uri.parse("content://" +
-                LauncherProvider.AUTHORITY + "/" + LauncherProvider.TABLE_FAVORITES +
+                AUTHORITY + "/" + LauncherProvider.TABLE_FAVORITES +
                 "?" + LauncherProvider.PARAMETER_NOTIFY + "=true");
+        static final Uri MyCONTENT_URI = Uri.parse("content://com.android.launcher.settings/" + LauncherProvider.TABLE_FAVORITES +
+        		"?" + LauncherProvider.PARAMETER_NOTIFY + "=true");
 
         /**
          * The content:// style URL for this table. When this Uri is used, no notification is
          * sent if the content changes.
          */
         static final Uri CONTENT_URI_NO_NOTIFICATION = Uri.parse("content://" +
-                LauncherProvider.AUTHORITY + "/" + LauncherProvider.TABLE_FAVORITES +
+                AUTHORITY + "/" + LauncherProvider.TABLE_FAVORITES +
                 "?" + LauncherProvider.PARAMETER_NOTIFY + "=false");
 
         /**
@@ -119,7 +122,7 @@ class LauncherSettings {
          * @return The unique content URL for the specified row.
          */
         static Uri getContentUri(long id, boolean notify) {
-            return Uri.parse("content://" + LauncherProvider.AUTHORITY +
+            return Uri.parse("content://" + AUTHORITY +
                     "/" + LauncherProvider.TABLE_FAVORITES + "/" + id + "?" +
                     LauncherProvider.PARAMETER_NOTIFY + "=" + notify);
         }

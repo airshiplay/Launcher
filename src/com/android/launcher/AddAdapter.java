@@ -16,6 +16,8 @@
 
 package com.android.launcher;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -25,7 +27,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.airshiplay.launcher.R;
 
 /**
  * Adapter showing the types of items that can be added to a {@link Workspace}.

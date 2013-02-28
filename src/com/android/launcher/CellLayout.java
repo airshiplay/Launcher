@@ -16,10 +16,12 @@
 
 package com.android.launcher;
 
+import java.util.ArrayList;
+
 import android.app.WallpaperManager;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
@@ -29,7 +31,7 @@ import android.view.View;
 import android.view.ViewDebug;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
+import com.airshiplay.launcher.R;
 
 public class CellLayout extends ViewGroup {
     private boolean mPortrait;
@@ -158,8 +160,8 @@ public class CellLayout extends ViewGroup {
 
         if (action == MotionEvent.ACTION_DOWN) {
             final Rect frame = mRect;
-            final int x = (int) ev.getX() + mScrollX;
-            final int y = (int) ev.getY() + mScrollY;
+            final int x = (int) ev.getX() + getScrollX();//lisve
+            final int y = (int) ev.getY() + getScrollY();//lisve
             final int count = getChildCount();
 
             boolean found = false;

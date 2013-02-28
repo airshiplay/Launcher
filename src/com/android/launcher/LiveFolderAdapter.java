@@ -16,25 +16,27 @@
 
 package com.android.launcher;
 
-import android.widget.CursorAdapter;
-import android.widget.TextView;
-import android.widget.ImageView;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.content.pm.PackageManager;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.LayoutInflater;
-import android.database.Cursor;
-import android.provider.LiveFolders;
-import android.graphics.drawable.Drawable;
-import android.graphics.BitmapFactory;
-import android.graphics.Bitmap;
-
+import java.lang.ref.SoftReference;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.lang.ref.SoftReference;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.provider.LiveFolders;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CursorAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.airshiplay.launcher.R;
 
 class LiveFolderAdapter extends CursorAdapter {
     private boolean mIsList;
@@ -141,7 +143,7 @@ class LiveFolderAdapter extends CursorAdapter {
 
             if (icon == null) {
                 final Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                icon = new FastBitmapDrawable(Utilities.createBitmapThumbnail(bitmap, mContext));
+                icon = new FastBitmapDrawable(Utilities.createBitmapThumbnail(bitmap, context));
                 mCustomIcons.put(holder.id, new SoftReference<Drawable>(icon));
             }
         } else if (holder.iconResourceIndex != -1 && holder.iconPackageIndex != -1) {
@@ -154,7 +156,7 @@ class LiveFolderAdapter extends CursorAdapter {
                             cursor.getString(holder.iconPackageIndex));
                     final int id = resources.getIdentifier(resource,
                             null, null);
-                    icon = Utilities.createIconThumbnail(resources.getDrawable(id), mContext);
+                    icon = Utilities.createIconThumbnail(resources.getDrawable(id), context);
                     mIcons.put(resource, icon);
                 } catch (Exception e) {
                     // Ignore

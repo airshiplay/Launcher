@@ -18,10 +18,12 @@ package com.android.launcher;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.AttributeSet;
-import android.view.ViewGroup;
-import android.view.LayoutInflater;
 import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+
+import com.airshiplay.launcher.R;
 
 public class LiveFolderIcon extends FolderIcon {
     public LiveFolderIcon(Context context, AttributeSet attrs) {

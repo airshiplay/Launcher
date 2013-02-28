@@ -20,20 +20,22 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Paint;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.PorterDuff;
-import android.os.Vibrator;
 import android.os.SystemClock;
+import android.os.Vibrator;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
+
+import com.airshiplay.launcher.R;
 
 /**
  * A ViewGroup that coordinated dragging across its dscendants
@@ -91,7 +93,7 @@ public class DragLayer extends FrameLayout implements DragController {
     private final Rect mRect = new Rect();
     private final int[] mDropCoordinates = new int[2];
 
-    private final Vibrator mVibrator = new Vibrator();
+    private final Vibrator mVibrator =(Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE );// new Vibrator();
 
     private DragListener mListener;
 
@@ -129,6 +131,7 @@ public class DragLayer extends FrameLayout implements DragController {
     private int mAnimationState = ANIMATION_STATE_DONE;
 
     private InputMethodManager mInputMethodManager;
+
 
     /**
      * Used to create a new DragLayer from XML.
@@ -259,8 +262,8 @@ public class DragLayer extends FrameLayout implements DragController {
                     case ANIMATION_TYPE_SCALE:
                         final Bitmap dragBitmap = mDragBitmap;
                         canvas.save();
-                        canvas.translate(mScrollX + mLastMotionX - mTouchOffsetX - mBitmapOffsetX,
-                                mScrollY + mLastMotionY - mTouchOffsetY - mBitmapOffsetY);
+                        canvas.translate(getScrollX() + mLastMotionX - mTouchOffsetX - mBitmapOffsetX,
+                                getScrollY() + mLastMotionY - mTouchOffsetY - mBitmapOffsetY);
                         canvas.translate((dragBitmap.getWidth() * (1.0f - value)) / 2,
                                 (dragBitmap.getHeight() * (1.0f - value)) / 2);
                         canvas.scale(value, value);
@@ -271,8 +274,8 @@ public class DragLayer extends FrameLayout implements DragController {
             } else {
                 // Draw actual icon being dragged
                 canvas.drawBitmap(mDragBitmap,
-                        mScrollX + mLastMotionX - mTouchOffsetX - mBitmapOffsetX,
-                        mScrollY + mLastMotionY - mTouchOffsetY - mBitmapOffsetY, mDragPaint);
+                		getScrollX() + mLastMotionX - mTouchOffsetX - mBitmapOffsetX,
+                		getScrollY() + mLastMotionY - mTouchOffsetY - mBitmapOffsetY, mDragPaint);
             }
         }
     }
@@ -348,8 +351,8 @@ public class DragLayer extends FrameLayout implements DragController {
 
             break;
         case MotionEvent.ACTION_MOVE:
-            final int scrollX = mScrollX;
-            final int scrollY = mScrollY;
+            final int scrollX = getScrollX();
+            final int scrollY = getScrollY();
 
             final float touchX = mTouchOffsetX;
             final float touchY = mTouchOffsetY;

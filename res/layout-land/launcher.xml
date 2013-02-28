@@ -16,7 +16,7 @@
 
 <com.android.launcher.DragLayer
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res/com.android.launcher"
+    xmlns:launcher="http://schemas.android.com/apk/res/com.airshiplay.launcher"
 
     android:id="@+id/drag_layer"
     android:layout_width="fill_parent"

@@ -87,4 +87,5 @@
         <attr name="title" format="reference" />
         <attr name="uri" format="string" />
     </declare-styleable>
+    <attr name="gridViewStyle" format="reference" />
 </resources>

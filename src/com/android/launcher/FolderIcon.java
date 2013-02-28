@@ -24,6 +24,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.airshiplay.launcher.R;
+
 /**
  * An icon that can appear on in the workspace representing an {@link UserFolder}.
  */

@@ -16,18 +16,20 @@
 
 package com.android.launcher;
 
+import java.lang.ref.WeakReference;
+
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.provider.LiveFolders;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.net.Uri;
-import android.provider.LiveFolders;
-import android.os.AsyncTask;
-import android.database.Cursor;
 
-import java.lang.ref.WeakReference;
+import com.airshiplay.launcher.R;
 
 public class LiveFolder extends Folder {
     private AsyncTask<LiveFolderInfo,Void,Cursor> mLoadingTask;

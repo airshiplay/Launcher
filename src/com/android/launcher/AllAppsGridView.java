@@ -16,16 +16,18 @@
 
 package com.android.launcher;
 
-import android.widget.GridView;
-import android.widget.AdapterView;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
-import android.graphics.BitmapFactory;
-import android.graphics.Bitmap;
-import android.graphics.Paint;
-import android.graphics.Canvas;
+import android.widget.AdapterView;
+import android.widget.GridView;
+
+import com.airshiplay.launcher.R;
 
 public class AllAppsGridView extends GridView implements AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener, DragSource {
@@ -42,7 +44,7 @@ public class AllAppsGridView extends GridView implements AdapterView.OnItemClick
     }
 
     public AllAppsGridView(Context context, AttributeSet attrs) {
-        this(context, attrs, com.android.internal.R.attr.gridViewStyle);
+        this(context, attrs, R.attr.gridViewStyle);
     }
 
     public AllAppsGridView(Context context, AttributeSet attrs, int defStyle) {
@@ -63,6 +65,7 @@ public class AllAppsGridView extends GridView implements AdapterView.OnItemClick
 
     @Override
     public boolean isOpaque() {
+    	if(mTexture==null)return false;
         return !mTexture.hasAlpha();
     }
 

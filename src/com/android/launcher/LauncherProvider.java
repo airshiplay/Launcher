@@ -18,38 +18,40 @@ package com.android.launcher;
 
 import static android.util.Log.w;
 
-import android.appwidget.AppWidgetHost;
-import android.content.ContentProvider;
-import android.content.Context;
-import android.content.ContentValues;
-import android.content.Intent;
-import android.content.ComponentName;
-import android.content.ContentUris;
-import android.content.ContentResolver;
-import android.content.res.Resources;
-import android.content.res.XmlResourceParser;
-import android.content.res.TypedArray;
-import android.content.pm.PackageManager;
-import android.content.pm.ActivityInfo;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
-import android.database.Cursor;
-import android.database.SQLException;
-import android.util.Log;
-import android.util.Xml;
-import android.util.AttributeSet;
-import android.net.Uri;
-import android.text.TextUtils;
-import android.os.*;
-import android.provider.Settings;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import android.appwidget.AppWidgetHost;
+import android.content.ComponentName;
+import android.content.ContentProvider;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.content.res.XmlResourceParser;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.text.TextUtils;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.util.Xml;
+
+import com.airshiplay.launcher.R;
 import com.android.internal.util.XmlUtils;
 import com.android.launcher.LauncherSettings.Favorites;
 
@@ -61,7 +63,7 @@ public class LauncherProvider extends ContentProvider {
     
     private static final int DATABASE_VERSION = 5;
 
-    static final String AUTHORITY = "com.android.launcher.settings";
+    static final String AUTHORITY = "com.airshiplay.launcher.settings";
     
     static final String EXTRA_BIND_SOURCES = "com.android.launcher.settings.bindsources";
     static final String EXTRA_BIND_TARGETS = "com.android.launcher.settings.bindtargets";

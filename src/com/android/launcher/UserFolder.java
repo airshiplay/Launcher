@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
+import com.airshiplay.launcher.R;
+
 /**
  * Folder which contains applications or shortcuts chosen by the user.
  *
@@ -67,7 +69,7 @@ public class UserFolder extends Folder implements DropTarget {
 
     void bind(FolderInfo info) {
         super.bind(info);
-        setContentAdapter(new ApplicationsAdapter(mContext, ((UserFolderInfo) info).contents));
+        setContentAdapter(new ApplicationsAdapter(getContext(), ((UserFolderInfo) info).contents));
     }
 
     // When the folder opens, we need to refresh the GridView's selection by

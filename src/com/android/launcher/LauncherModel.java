@@ -16,11 +16,24 @@
 
 package com.android.launcher;
 
+import static android.util.Log.d;
+import static android.util.Log.e;
+import static android.util.Log.w;
+
+import java.lang.ref.WeakReference;
+import java.net.URISyntaxException;
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -30,17 +43,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import static android.util.Log.*;
 import android.os.Process;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Comparator;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.lang.ref.WeakReference;
-import java.text.Collator;
-import java.net.URISyntaxException;
+import com.airshiplay.launcher.R;
 
 /**
  * Maintains in-memory state of the Launcher. It is expected that there should be only one
@@ -767,8 +772,8 @@ public class LauncherModel {
             final ArrayList<LauncherAppWidgetInfo> desktopAppWidgets = mDesktopAppWidgets;
 
             final Cursor c = contentResolver.query(
-                    LauncherSettings.Favorites.CONTENT_URI, null, null, null, null);
-
+                    LauncherSettings.Favorites.MyCONTENT_URI, null, null, null, null);
+//LauncherSettings.Favorites.CONTENT_URI
             try {
                 final int idIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites._ID);
                 final int intentIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.INTENT);
