@@ -444,9 +444,9 @@ public class Workspace extends ViewGroup implements DropTarget, DragSource, Drag
     public void computeScroll() {
         if (mScroller.computeScrollOffset()) {
             mTouchX = mScroller.getCurrX();
-            setScrollX(mScroller.getCurrX()); 
+            scrollTo(mScroller.getCurrX(),getScrollY()); 
             mSmoothingTime = System.nanoTime() / NANOTIME_DIV;
-            setScrollY(mScroller.getCurrY());
+            scrollTo(getScrollX(),mScroller.getCurrY());
             updateWallpaperOffset();
             postInvalidate();
         } else if (mNextScreen != INVALID_SCREEN) {
@@ -460,9 +460,9 @@ public class Workspace extends ViewGroup implements DropTarget, DragSource, Drag
             final float now = System.nanoTime() / NANOTIME_DIV;
             final float e = (float) Math.exp((now - mSmoothingTime) / SMOOTHING_CONSTANT);
             final float dx = mTouchX - getScrollX();
-            setScrollX((int) (getScrollX() + dx * e));
+            scrollTo((int) (getScrollX() + dx * e), getScrollY()); //           setScrollX((int) (getScrollX() + dx * e));
             mSmoothingTime = now;
-
+ 
             // Keep generating points as long as we're more than 1px away from the target
             if (dx > 1.f || dx < -1.f) {
                 updateWallpaperOffset();
