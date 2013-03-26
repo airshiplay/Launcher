@@ -17,7 +17,7 @@
  */
 -->
 
-<com.android.launcher.LiveFolder xmlns:android="http://schemas.android.com/apk/res/android"
+<com.android.launcher2.LiveFolder xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical">
     
     <Button
@@ -27,24 +27,29 @@
         android:textSize="14sp"
         android:textColor="#404040"
         android:textStyle="bold"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
     	android:layout_height="wrap_content" />
 
-    <GridView
-        android:id="@+id/folder_content"
-        android:layout_width="fill_parent"
-    	android:layout_height="0dip"
-    	android:layout_weight="1"
-            
-        android:cacheColorHint="#ff333333"
-        android:background="@drawable/box_launcher_bottom"
+    <FrameLayout
+         android:layout_width="match_parent"
+	   android:layout_height="0dip"
+         android:layout_weight="1"
+         android:background="@drawable/box_launcher_bottom">
 
-        android:scrollbarAlwaysDrawVerticalTrack="true"
-        android:scrollbarStyle="insideInset"
-        android:drawSelectorOnTop="false"
-        android:listSelector="@drawable/grid_selector"
+        <GridView
+             android:id="@+id/folder_content"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
 
-        android:verticalSpacing="10dip"
-        android:numColumns="5" />
+             android:cacheColorHint="#ff333333"
 
-</com.android.launcher.LiveFolder>
+             android:scrollbarAlwaysDrawVerticalTrack="true"
+             android:scrollbarStyle="insideInset"
+             android:drawSelectorOnTop="false"
+             android:listSelector="@drawable/grid_selector"
+
+             android:verticalSpacing="10dip"
+             android:numColumns="5" />
+    </FrameLayout>
+
+</com.android.launcher2.LiveFolder>
