@@ -4,9 +4,9 @@
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
      You may obtain a copy of the License at
-  
+
           http://www.apache.org/licenses/LICENSE-2.0
-  
+
      Unless required by applicable law or agreed to in writing, software
      distributed under the License is distributed on an "AS IS" BASIS,
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,110 +22,72 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/all_apps" />
-
-    <!-- The workspace contains 3 screens of cells -->
+    <!-- The workspace contains 5 screens of cells -->
     <com.android.launcher2.Workspace
         android:id="@+id/workspace"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="horizontal"
-        android:fadeScrollbars="true"
-        launcher:defaultScreen="2">
+        android:paddingLeft="@dimen/qsb_bar_height"
+        android:paddingRight="@dimen/button_bar_height"
+        launcher:defaultScreen="2"
+        launcher:cellCountX="4"
+        launcher:cellCountY="4"
+        launcher:pageSpacing="@dimen/workspace_page_spacing"
+        launcher:scrollIndicatorPaddingLeft="@dimen/qsb_bar_height"
+        launcher:scrollIndicatorPaddingRight="@dimen/button_bar_height">
 
         <include android:id="@+id/cell1" layout="@layout/workspace_screen" />
         <include android:id="@+id/cell2" layout="@layout/workspace_screen" />
         <include android:id="@+id/cell3" layout="@layout/workspace_screen" />
         <include android:id="@+id/cell4" layout="@layout/workspace_screen" />
         <include android:id="@+id/cell5" layout="@layout/workspace_screen" />
-
     </com.android.launcher2.Workspace>
 
-    <com.android.launcher2.ClippedImageView
-        android:id="@+id/previous_screen"
-        android:layout_width="93dip"
-        android:layout_height="@dimen/button_bar_height"
-        android:layout_gravity="bottom|left"
-        android:layout_marginLeft="6dip"
+    <include
+        android:id="@+id/qsb_divider"
+        layout="@layout/workspace_divider"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/qsb_bar_height"
+        android:layout_gravity="left" />
+    <include
+        android:id="@+id/dock_divider"
+        layout="@layout/workspace_divider"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginRight="@dimen/button_bar_height"
+        android:layout_gravity="right" />
+    <include
+        android:id="@+id/paged_view_indicator"
+        layout="@layout/scroll_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" />
 
-        android:scaleType="center"
-        android:src="@drawable/home_arrows_left"
-        
-        android:onClick="previousScreen"
+    <include layout="@layout/hotseat"
+        android:id="@+id/hotseat"
+        android:layout_width="@dimen/button_bar_height_plus_padding"
+        android:layout_height="match_parent"
+        android:layout_gravity="right" />
+    <include
+        android:id="@+id/qsb_bar"
+        layout="@layout/qsb_bar" />
 
-        launcher:ignoreZone="56dip"
+    <include layout="@layout/apps_customize_pane"
+        android:id="@+id/apps_customize_pane"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
 
-        android:focusable="true"
-        android:clickable="true" />
+    <include layout="@layout/workspace_cling"
+        android:id="@+id/workspace_cling"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
-    <com.android.launcher2.ClippedImageView
-        android:id="@+id/next_screen"
-        android:layout_width="93dip"
-        android:layout_height="@dimen/button_bar_height"
-        android:layout_gravity="bottom|right"
-        android:layout_marginRight="6dip"
-
-        android:scaleType="center"
-        android:src="@drawable/home_arrows_right"
-        
-        android:onClick="nextScreen"
-        
-        launcher:ignoreZone="-56dip"
-        
-        android:focusable="true"
-        android:clickable="true" />
-
-    <com.android.launcher2.DeleteZone
-        android:id="@+id/delete_zone"
-        android:layout_width="@dimen/delete_zone_size"
-        android:layout_height="@dimen/delete_zone_size"
-        android:paddingLeft="@dimen/delete_zone_padding"
-        android:layout_marginBottom="@dimen/half_status_bar_height"
-        android:layout_gravity="right|center_vertical"
-
-        android:scaleType="center"
-        android:src="@drawable/delete_zone_selector"
-        android:visibility="invisible"
-        launcher:direction="vertical"
-        />
-
-    <RelativeLayout
-        android:id="@+id/all_apps_button_cluster"
-        android:layout_height="fill_parent"
-        android:layout_width="@dimen/button_bar_height_portrait"
-        android:layout_gravity="right|center_vertical"
-        android:layout_marginBottom="@dimen/half_status_bar_height"
-        >
-
-        <com.android.launcher2.HandleView
-            style="@style/HotseatButton"
-            android:id="@+id/all_apps_button"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-
-            android:src="@drawable/all_apps_button"
-            launcher:direction="vertical"
-            />
-
-        <ImageView
-            android:id="@+id/hotseat_left"
-            style="@style/HotseatButton.Left"
-            android:layout_below="@id/all_apps_button"
-
-            android:src="@drawable/hotseat_phone"
-
-            android:onClick="launchHotSeat"
-            />
-
-        <ImageView
-            android:id="@+id/hotseat_right"
-            style="@style/HotseatButton.Right"
-            android:layout_above="@id/all_apps_button"
-
-            android:src="@drawable/hotseat_browser"
-
-            android:onClick="launchHotSeat"
-            />
-
-    </RelativeLayout>
+    <include layout="@layout/folder_cling"
+        android:id="@+id/folder_cling"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 </com.android.launcher2.DragLayer>

@@ -1,4 +1,4 @@
 Launcher
 ========
 
-from android source Launcher  tag android-2.1_r2.1s
+from android source Launcher  tag android-4.0.4_r2.1

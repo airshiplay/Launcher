@@ -38,7 +38,7 @@ class ItemInfo {
     /**
      * One of {@link LauncherSettings.Favorites#ITEM_TYPE_APPLICATION},
      * {@link LauncherSettings.Favorites#ITEM_TYPE_SHORTCUT},
-     * {@link LauncherSettings.Favorites#ITEM_TYPE_USER_FOLDER}, or
+     * {@link LauncherSettings.Favorites#ITEM_TYPE_FOLDER}, or
      * {@link LauncherSettings.Favorites#ITEM_TYPE_APPWIDGET}.
      */
     int itemType;
@@ -81,6 +81,11 @@ class ItemInfo {
      */
     boolean isGesture = false;
 
+    /**
+     * The position of the item in a drag-and-drop operation.
+     */
+    int[] dropPos = null;
+
     ItemInfo() {
     }
 
@@ -112,6 +117,11 @@ class ItemInfo {
         }
     }
 
+    void updateValuesWithCoordinates(ContentValues values, int cellX, int cellY) {
+        values.put(LauncherSettings.Favorites.CELLX, cellX);
+        values.put(LauncherSettings.Favorites.CELLY, cellY);
+    }
+
     static byte[] flattenBitmap(Bitmap bitmap) {
         // Try go guesstimate how much space the icon will take when serialized
         // to avoid unnecessary allocations/copies during the write.
@@ -134,12 +144,20 @@ class ItemInfo {
             values.put(LauncherSettings.Favorites.ICON, data);
         }
     }
-    
+
+    /**
+     * It is very important that sub-classes implement this if they contain any references
+     * to the activity (anything in the view hierarchy etc.). If not, leaks can result since
+     * ItemInfo objects persist across rotation and can hence leak by holding stale references
+     * to the old view hierarchy / activity.
+     */
     void unbind() {
     }
 
     @Override
     public String toString() {
-        return "Item(id=" + this.id + " type=" + this.itemType + ")";
+        return "Item(id=" + this.id + " type=" + this.itemType + " container=" + this.container
+            + " screen=" + screen + " cellX=" + cellX + " cellY=" + cellY + " spanX=" + spanX
+            + " spanY=" + spanY + " isGesture=" + isGesture + " dropPos=" + dropPos + ")";
     }
 }

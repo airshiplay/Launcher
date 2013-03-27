@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 
 import com.airshiplay.launcher.R;
 
@@ -30,16 +31,14 @@ import com.airshiplay.launcher.R;
  */
 public class LauncherAppWidgetHostView extends AppWidgetHostView {
     private boolean mHasPerformedLongPress;
-    
     private CheckForLongPress mPendingCheckForLongPress;
-    
     private LayoutInflater mInflater;
-    
+
     public LauncherAppWidgetHostView(Context context) {
         super(context);
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
-    
+
     @Override
     protected View getErrorView() {
         return mInflater.inflate(R.layout.appwidget_error, this, false);
@@ -51,7 +50,7 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
             mHasPerformedLongPress = false;
             return true;
         }
-            
+
         // Watch for longpress events at this level to make sure
         // users can always pick up this widget
         switch (ev.getAction()) {
@@ -59,7 +58,7 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
                 postCheckForLongClick();
                 break;
             }
-            
+
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 mHasPerformedLongPress = false;
@@ -68,11 +67,11 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
                 }
                 break;
         }
-        
+
         // Otherwise continue letting touch events fall through to children
         return false;
     }
-    
+
     class CheckForLongPress implements Runnable {
         private int mOriginalWindowAttachCount;
 
@@ -109,5 +108,10 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
         if (mPendingCheckForLongPress != null) {
             removeCallbacks(mPendingCheckForLongPress);
         }
+    }
+
+    @Override
+    public int getDescendantFocusability() {
+        return ViewGroup.FOCUS_BLOCK_DESCENDANTS;
     }
 }

@@ -16,18 +16,23 @@
 
 package com.android.launcher2;
 
-import android.graphics.drawable.Drawable;
-import android.graphics.PixelFormat;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 
 class FastBitmapDrawable extends Drawable {
     private Bitmap mBitmap;
+    private int mAlpha;
     private int mWidth;
     private int mHeight;
+    private final Paint mPaint = new Paint();
 
     FastBitmapDrawable(Bitmap b) {
+	mAlpha = 255;
         mBitmap = b;
         if (b != null) {
             mWidth = mBitmap.getWidth();
@@ -39,7 +44,13 @@ class FastBitmapDrawable extends Drawable {
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(mBitmap, 0.0f, 0.0f, null);
+        final Rect r = getBounds();
+        canvas.drawBitmap(mBitmap, r.left, r.top, mPaint);
+    }
+
+    @Override
+    public void setColorFilter(ColorFilter cf) {
+        mPaint.setColorFilter(cf);
     }
 
     @Override
@@ -49,10 +60,16 @@ class FastBitmapDrawable extends Drawable {
 
     @Override
     public void setAlpha(int alpha) {
+        mAlpha = alpha;
+        mPaint.setAlpha(alpha);
     }
 
-    @Override
-    public void setColorFilter(ColorFilter cf) {
+    public void setFilterBitmap(boolean filterBitmap) {
+        mPaint.setFilterBitmap(filterBitmap);
+    }
+
+    public int getAlpha() {
+        return mAlpha;
     }
 
     @Override

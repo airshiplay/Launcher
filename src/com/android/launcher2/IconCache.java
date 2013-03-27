@@ -20,9 +20,11 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
 
 import java.util.HashMap;
 
@@ -37,31 +39,94 @@ public class IconCache {
     private static class CacheEntry {
         public Bitmap icon;
         public String title;
-        public Bitmap titleBitmap;
     }
 
     private final Bitmap mDefaultIcon;
     private final LauncherApplication mContext;
     private final PackageManager mPackageManager;
-    private final Utilities.BubbleText mBubble;
     private final HashMap<ComponentName, CacheEntry> mCache =
             new HashMap<ComponentName, CacheEntry>(INITIAL_ICON_CACHE_CAPACITY);
+    private int mIconDpi;
 
     public IconCache(LauncherApplication context) {
         mContext = context;
         mPackageManager = context.getPackageManager();
-        mBubble = new Utilities.BubbleText(context);
+        int density = context.getResources().getDisplayMetrics().densityDpi;
+        if (LauncherApplication.isScreenLarge()) {
+            if (density == DisplayMetrics.DENSITY_LOW) {
+                mIconDpi = DisplayMetrics.DENSITY_MEDIUM;
+            } else if (density == DisplayMetrics.DENSITY_MEDIUM) {
+                mIconDpi = DisplayMetrics.DENSITY_HIGH;
+            } else if (density == DisplayMetrics.DENSITY_HIGH) {
+                mIconDpi = DisplayMetrics.DENSITY_XHIGH;
+            } else if (density == DisplayMetrics.DENSITY_XHIGH) {
+                // We'll need to use a denser icon, or some sort of a mipmap
+                mIconDpi = DisplayMetrics.DENSITY_XHIGH;
+            }
+        } else {
+            mIconDpi = context.getResources().getDisplayMetrics().densityDpi;
+        }
+        // need to set mIconDpi before getting default icon
         mDefaultIcon = makeDefaultIcon();
     }
 
+    public Drawable getFullResDefaultActivityIcon() {
+        return getFullResIcon(Resources.getSystem(),
+                android.R.mipmap.sym_def_app_icon);
+    }
+
+    public Drawable getFullResIcon(Resources resources, int iconId) {
+        Drawable d;
+        try {
+            d = resources.getDrawableForDensity(iconId, mIconDpi);
+        } catch (Resources.NotFoundException e) {
+            d = null;
+        }
+
+        return (d != null) ? d : getFullResDefaultActivityIcon();
+    }
+
+    public Drawable getFullResIcon(String packageName, int iconId) {
+        Resources resources;
+        try {
+            resources = mPackageManager.getResourcesForApplication(packageName);
+        } catch (PackageManager.NameNotFoundException e) {
+            resources = null;
+        }
+        if (resources != null) {
+            if (iconId != 0) {
+                return getFullResIcon(resources, iconId);
+            }
+        }
+        return getFullResDefaultActivityIcon();
+    }
+
+    public Drawable getFullResIcon(ResolveInfo info) {
+        Resources resources;
+        try {
+            resources = mPackageManager.getResourcesForApplication(
+                    info.activityInfo.applicationInfo);
+        } catch (PackageManager.NameNotFoundException e) {
+            resources = null;
+        }
+        if (resources != null) {
+            int iconId = info.activityInfo.getIconResource();
+            if (iconId != 0) {
+                return getFullResIcon(resources, iconId);
+            }
+        }
+        return getFullResDefaultActivityIcon();
+    }
+
     private Bitmap makeDefaultIcon() {
-        Drawable d = mPackageManager.getDefaultActivityIcon();
+        Drawable d = getFullResDefaultActivityIcon();
         Bitmap b = Bitmap.createBitmap(Math.max(d.getIntrinsicWidth(), 1),
                 Math.max(d.getIntrinsicHeight(), 1),
                 Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas(b);
         d.setBounds(0, 0, b.getWidth(), b.getHeight());
         d.draw(c);
+        c.setBitmap(null);
         return b;
     }
 
@@ -86,15 +151,12 @@ public class IconCache {
     /**
      * Fill in "application" with the icon and label for "info."
      */
-    public void getTitleAndIcon(ApplicationInfo application, ResolveInfo info) {
+    public void getTitleAndIcon(ApplicationInfo application, ResolveInfo info,
+            HashMap<Object, CharSequence> labelCache) {
         synchronized (mCache) {
-            CacheEntry entry = cacheLocked(application.componentName, info);
-            if (entry.titleBitmap == null) {
-                entry.titleBitmap = mBubble.createTextBitmap(entry.title);
-            }
+            CacheEntry entry = cacheLocked(application.componentName, info, labelCache);
 
             application.title = entry.title;
-            application.titleBitmap = entry.titleBitmap;
             application.iconBitmap = entry.icon;
         }
     }
@@ -108,18 +170,19 @@ public class IconCache {
                 return mDefaultIcon;
             }
 
-            CacheEntry entry = cacheLocked(component, resolveInfo);
+            CacheEntry entry = cacheLocked(component, resolveInfo, null);
             return entry.icon;
         }
     }
 
-    public Bitmap getIcon(ComponentName component, ResolveInfo resolveInfo) {
+    public Bitmap getIcon(ComponentName component, ResolveInfo resolveInfo,
+            HashMap<Object, CharSequence> labelCache) {
         synchronized (mCache) {
             if (resolveInfo == null || component == null) {
                 return null;
             }
 
-            CacheEntry entry = cacheLocked(component, resolveInfo);
+            CacheEntry entry = cacheLocked(component, resolveInfo, labelCache);
             return entry.icon;
         }
     }
@@ -128,20 +191,41 @@ public class IconCache {
         return mDefaultIcon == icon;
     }
 
-    private CacheEntry cacheLocked(ComponentName componentName, ResolveInfo info) {
+    private CacheEntry cacheLocked(ComponentName componentName, ResolveInfo info,
+            HashMap<Object, CharSequence> labelCache) {
         CacheEntry entry = mCache.get(componentName);
         if (entry == null) {
             entry = new CacheEntry();
 
             mCache.put(componentName, entry);
 
-            entry.title = info.loadLabel(mPackageManager).toString();
+            ComponentName key = LauncherModel.getComponentNameFromResolveInfo(info);
+            if (labelCache != null && labelCache.containsKey(key)) {
+                entry.title = labelCache.get(key).toString();
+            } else {
+                entry.title = info.loadLabel(mPackageManager).toString();
+                if (labelCache != null) {
+                    labelCache.put(key, entry.title);
+                }
+            }
             if (entry.title == null) {
                 entry.title = info.activityInfo.name;
             }
+
             entry.icon = Utilities.createIconBitmap(
-                    info.activityInfo.loadIcon(mPackageManager), mContext);
+                    getFullResIcon(info), mContext);
         }
         return entry;
+    }
+
+    public HashMap<ComponentName,Bitmap> getAllIcons() {
+        synchronized (mCache) {
+            HashMap<ComponentName,Bitmap> set = new HashMap<ComponentName,Bitmap>();
+            for (ComponentName cn : mCache.keySet()) {
+                final CacheEntry e = mCache.get(cn);
+                set.put(cn, e.icon);
+            }
+            return set;
+        }
     }
 }

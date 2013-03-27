@@ -16,8 +16,8 @@
 
 package com.android.launcher2;
 
-import android.provider.BaseColumns;
 import android.net.Uri;
+import android.provider.BaseColumns;
 
 /**
  * Settings related utilities.
@@ -97,9 +97,8 @@ class LauncherSettings {
         /**
          * The content:// style URL for this table
          */
-        static final String AUTHORITY = "com.android.launcher2.settings";
         static final Uri CONTENT_URI = Uri.parse("content://" +
-                AUTHORITY + "/" + LauncherProvider.TABLE_FAVORITES +
+                LauncherProvider.AUTHORITY + "/" + LauncherProvider.TABLE_FAVORITES +
                 "?" + LauncherProvider.PARAMETER_NOTIFY + "=true");
 
         /**
@@ -107,7 +106,7 @@ class LauncherSettings {
          * sent if the content changes.
          */
         static final Uri CONTENT_URI_NO_NOTIFICATION = Uri.parse("content://" +
-                AUTHORITY + "/" + LauncherProvider.TABLE_FAVORITES +
+                LauncherProvider.AUTHORITY + "/" + LauncherProvider.TABLE_FAVORITES +
                 "?" + LauncherProvider.PARAMETER_NOTIFY + "=false");
 
         /**
@@ -119,7 +118,7 @@ class LauncherSettings {
          * @return The unique content URL for the specified row.
          */
         static Uri getContentUri(long id, boolean notify) {
-            return Uri.parse("content://" + AUTHORITY +
+            return Uri.parse("content://" + LauncherProvider.AUTHORITY +
                     "/" + LauncherProvider.TABLE_FAVORITES + "/" + id + "?" +
                     LauncherProvider.PARAMETER_NOTIFY + "=" + notify);
         }
@@ -134,6 +133,7 @@ class LauncherSettings {
          * The icon is a resource identified by a package name and an integer id.
          */
         static final int CONTAINER_DESKTOP = -100;
+        static final int CONTAINER_HOTSEAT = -101;
 
         /**
          * The screen holding the favorite (if container is CONTAINER_DESKTOP)
@@ -143,7 +143,7 @@ class LauncherSettings {
 
         /**
          * The X coordinate of the cell holding the favorite
-         * (if container is CONTAINER_DESKTOP or CONTAINER_DOCK)
+         * (if container is CONTAINER_HOTSEAT or CONTAINER_HOTSEAT)
          * <P>Type: INTEGER</P>
          */
         static final String CELLX = "cellX";
@@ -170,11 +170,15 @@ class LauncherSettings {
         /**
          * The favorite is a user created folder
          */
-        static final int ITEM_TYPE_USER_FOLDER = 2;
+        static final int ITEM_TYPE_FOLDER = 2;
 
         /**
-         * The favorite is a live folder
-         */
+        * The favorite is a live folder
+        *
+        * Note: live folders can no longer be added to Launcher, and any live folders which
+        * exist within the launcher database will be ignored when loading.  That said, these
+        * entries in the database may still exist, and are not automatically stripped.
+        */
         static final int ITEM_TYPE_LIVE_FOLDER = 3;
 
         /**

@@ -23,15 +23,13 @@ public interface AllAppsView {
         public void zoomed(float zoom);
     }
 
-    public void setLauncher(Launcher launcher);
-
-    public void setDragController(DragController dragger);
+    public void setup(Launcher launcher, DragController dragController);
 
     public void zoom(float zoom, boolean animate);
 
     public boolean isVisible();
 
-    public boolean isOpaque();
+    public boolean isAnimating();
 
     public void setApps(ArrayList<ApplicationInfo> list);
 
@@ -41,6 +39,9 @@ public interface AllAppsView {
 
     public void updateApps(ArrayList<ApplicationInfo> list);
     
+    // Resets the AllApps page to the front
+    public void reset();
+
     public void dumpState();
 
     public void surrender();

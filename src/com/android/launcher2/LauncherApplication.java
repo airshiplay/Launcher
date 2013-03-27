@@ -17,22 +17,34 @@
 package com.android.launcher2;
 
 import android.app.Application;
+import android.app.SearchManager;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.os.Handler;
-//import dalvik.system.VMRuntime;
+
+import java.lang.ref.WeakReference;
 
 public class LauncherApplication extends Application {
     public LauncherModel mModel;
     public IconCache mIconCache;
+    private static boolean sIsScreenLarge;
+    private static float sScreenDensity;
+    WeakReference<LauncherProvider> mLauncherProvider;
 
     @Override
     public void onCreate() {
-        //VMRuntime.getRuntime().setMinimumHeapSize(4 * 1024 * 1024);
-
         super.onCreate();
+
+        // set sIsScreenXLarge and sScreenDensity *before* creating icon cache
+        final int screenSize = getResources().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK;
+        sIsScreenLarge = screenSize == Configuration.SCREENLAYOUT_SIZE_LARGE ||
+            screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE;
+        sScreenDensity = getResources().getDisplayMetrics().density;
 
         mIconCache = new IconCache(this);
         mModel = new LauncherModel(this, mIconCache);
@@ -46,6 +58,14 @@ public class LauncherApplication extends Application {
         filter = new IntentFilter();
         filter.addAction(Intent.ACTION_EXTERNAL_APPLICATIONS_AVAILABLE);
         filter.addAction(Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE);
+        filter.addAction(Intent.ACTION_LOCALE_CHANGED);
+        filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
+        registerReceiver(mModel, filter);
+        filter = new IntentFilter();
+        filter.addAction(SearchManager.INTENT_GLOBAL_SEARCH_ACTIVITY_CHANGED);
+        registerReceiver(mModel, filter);
+        filter = new IntentFilter();
+        filter.addAction(SearchManager.INTENT_ACTION_SEARCHABLES_CHANGED);
         registerReceiver(mModel, filter);
 
         // Register for changes to the favorites
@@ -88,5 +108,26 @@ public class LauncherApplication extends Application {
 
     LauncherModel getModel() {
         return mModel;
+    }
+
+    void setLauncherProvider(LauncherProvider provider) {
+        mLauncherProvider = new WeakReference<LauncherProvider>(provider);
+    }
+
+    LauncherProvider getLauncherProvider() {
+        return mLauncherProvider.get();
+    }
+
+    public static boolean isScreenLarge() {
+        return sIsScreenLarge;
+    }
+
+    public static boolean isScreenLandscape(Context context) {
+        return context.getResources().getConfiguration().orientation ==
+            Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    public static float getScreenDensity() {
+        return sScreenDensity;
     }
 }

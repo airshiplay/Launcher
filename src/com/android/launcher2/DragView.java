@@ -17,39 +17,36 @@
 
 package com.android.launcher2;
 
-import android.content.Context;
-import android.content.res.TypedArray;
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PixelFormat;
 import android.graphics.Point;
-import android.os.IBinder;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Gravity;
+import android.graphics.Rect;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.KeyEvent;
-import android.view.WindowManager;
-//import android.view.WindowManagerImpl;
+import android.view.animation.DecelerateInterpolator;
 
-public class DragView extends View implements TweenCallback {
-    // Number of pixels to add to the dragged item for scaling.  Should be even for pixel alignment.
-    private static final int DRAG_SCALE = 40;
+import com.airshiplay.launcher.R;
 
+public class DragView extends View {
     private Bitmap mBitmap;
     private Paint mPaint;
     private int mRegistrationX;
     private int mRegistrationY;
 
-    SymmetricalLinearTween mTween;
-    private float mScale;
-    private float mAnimationScale = 1.0f;
+    private Point mDragVisualizeOffset = null;
+    private Rect mDragRegion = null;
+    private DragLayer mDragLayer = null;
+    private boolean mHasDrawn = false;
 
-    private WindowManager.LayoutParams mLayoutParams;
-    private WindowManager mWindowManager;
+    ValueAnimator mAnim;
+    private float mOffsetX = 0.0f;
+    private float mOffsetY = 0.0f;
+
+    private DragLayer.LayoutParams mLayoutParams;
 
     /**
      * Construct the drag view.
@@ -57,29 +54,100 @@ public class DragView extends View implements TweenCallback {
      * The registration point is the point inside our view that the touch events should
      * be centered upon.
      *
-     * @param context A context
+     * @param launcher The Launcher instance
      * @param bitmap The view that we're dragging around.  We scale it up when we draw it.
      * @param registrationX The x coordinate of the registration point.
      * @param registrationY The y coordinate of the registration point.
      */
-    public DragView(Context context, Bitmap bitmap, int registrationX, int registrationY,
+    public DragView(Launcher launcher, Bitmap bitmap, int registrationX, int registrationY,
             int left, int top, int width, int height) {
-        super(context);
+        super(launcher);
+        mDragLayer = launcher.getDragLayer();
 
-        mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);//WindowManagerImpl.getDefault();
-        
-        mTween = new SymmetricalLinearTween(false, 110 /*ms duration*/, this);
+        final Resources res = getResources();
+        final int dragScale = res.getInteger(R.integer.config_dragViewExtraPixels);
 
         Matrix scale = new Matrix();
-        float scaleFactor = width;
-        scaleFactor = mScale = (scaleFactor + DRAG_SCALE) / scaleFactor;
-        scale.setScale(scaleFactor, scaleFactor);
+        final float scaleFactor = (width + dragScale) / width;
+        if (scaleFactor != 1.0f) {
+            scale.setScale(scaleFactor, scaleFactor);
+        }
+
+        final int offsetX = res.getDimensionPixelSize(R.dimen.dragViewOffsetX);
+        final int offsetY = res.getDimensionPixelSize(R.dimen.dragViewOffsetY);
+
+        // Animate the view into the correct position
+        mAnim = ValueAnimator.ofFloat(0.0f, 1.0f);
+        mAnim.setDuration(110);
+        mAnim.setInterpolator(new DecelerateInterpolator(2.5f));
+        mAnim.addUpdateListener(new AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                final float value = (Float) animation.getAnimatedValue();
+
+                final int deltaX = (int) ((value * offsetX) - mOffsetX);
+                final int deltaY = (int) ((value * offsetY) - mOffsetY);
+
+                mOffsetX += deltaX;
+                mOffsetY += deltaY;
+
+                if (getParent() == null) {
+                    animation.cancel();
+                } else {
+                    DragLayer.LayoutParams lp = mLayoutParams;
+                    lp.x += deltaX;
+                    lp.y += deltaY;
+                    mDragLayer.requestLayout();
+                }
+            }
+        });
 
         mBitmap = Bitmap.createBitmap(bitmap, left, top, width, height, scale, true);
+        setDragRegion(new Rect(0, 0, width, height));
 
         // The point in our scaled bitmap that the touch events are located
-        mRegistrationX = registrationX + (DRAG_SCALE / 2);
-        mRegistrationY = registrationY + (DRAG_SCALE / 2);
+        mRegistrationX = registrationX;
+        mRegistrationY = registrationY;
+
+        // Force a measure, because Workspace uses getMeasuredHeight() before the layout pass
+        int ms = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        measure(ms, ms);
+    }
+
+    public float getOffsetY() {
+        return mOffsetY;
+    }
+
+    public int getDragRegionLeft() {
+        return mDragRegion.left;
+    }
+
+    public int getDragRegionTop() {
+        return mDragRegion.top;
+    }
+
+    public int getDragRegionWidth() {
+        return mDragRegion.width();
+    }
+
+    public int getDragRegionHeight() {
+        return mDragRegion.height();
+    }
+
+    public void setDragVisualizeOffset(Point p) {
+        mDragVisualizeOffset = p;
+    }
+
+    public Point getDragVisualizeOffset() {
+        return mDragVisualizeOffset;
+    }
+
+    public void setDragRegion(Rect r) {
+        mDragRegion = r;
+    }
+
+    public Rect getDragRegion() {
+        return mDragRegion;
     }
 
     @Override
@@ -96,31 +164,9 @@ public class DragView extends View implements TweenCallback {
             p.setColor(0xaaffffff);
             canvas.drawRect(0, 0, getWidth(), getHeight(), p);
         }
-        float scale = mAnimationScale;
-        if (scale < 0.999f) { // allow for some float error
-            float width = mBitmap.getWidth();
-            float offset = (width-(width*scale))/2;
-            canvas.translate(offset, offset);
-            canvas.scale(scale, scale);
-        }
+
+        mHasDrawn = true;
         canvas.drawBitmap(mBitmap, 0.0f, 0.0f, mPaint);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        mBitmap.recycle();
-    }
-
-    public void onTweenValueChanged(float value, float oldValue) {
-        mAnimationScale = (1.0f+((mScale-1.0f)*value))/mScale;
-        invalidate();
-    }
-
-    public void onTweenStarted() {
-    }
-
-    public void onTweenFinished() {
     }
 
     public void setPaint(Paint paint) {
@@ -128,55 +174,67 @@ public class DragView extends View implements TweenCallback {
         invalidate();
     }
 
+    public boolean hasDrawn() {
+        return mHasDrawn;
+    }
+
+    @Override
+    public void setAlpha(float alpha) {
+        super.setAlpha(alpha);
+        if (mPaint == null) {
+            mPaint = new Paint();
+        }
+        mPaint.setAlpha((int) (255 * alpha));
+        invalidate();
+    }
+
     /**
      * Create a window containing this view and show it.
      *
      * @param windowToken obtained from v.getWindowToken() from one of your views
-     * @param touchX the x coordinate the user touched in screen coordinates
-     * @param touchY the y coordinate the user touched in screen coordinates
+     * @param touchX the x coordinate the user touched in DragLayer coordinates
+     * @param touchY the y coordinate the user touched in DragLayer coordinates
      */
-    public void show(IBinder windowToken, int touchX, int touchY) {
-        WindowManager.LayoutParams lp;
-        int pixelFormat;
-
-        pixelFormat = PixelFormat.TRANSLUCENT;
-
-        lp = new WindowManager.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                touchX-mRegistrationX, touchY-mRegistrationY,
-                WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL,
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                    | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                    /*| WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM*/,
-                pixelFormat);
-//        lp.token = mStatusBarView.getWindowToken();
-        lp.gravity = Gravity.LEFT | Gravity.TOP;
-        lp.token = windowToken;
-        lp.setTitle("DragView");
+    public void show(int touchX, int touchY) {
+        mDragLayer.addView(this);
+        DragLayer.LayoutParams lp = new DragLayer.LayoutParams(0, 0);
+        lp.width = mBitmap.getWidth();
+        lp.height = mBitmap.getHeight();
+        lp.x = touchX - mRegistrationX;
+        lp.y = touchY - mRegistrationY;
+        lp.customPosition = true;
+        setLayoutParams(lp);
         mLayoutParams = lp;
-
-        mWindowManager.addView(this, lp);
-
-        mAnimationScale = 1.0f/mScale;
-        mTween.start(true);
+        mAnim.start();
     }
-    
+
     /**
      * Move the window containing this view.
      *
-     * @param touchX the x coordinate the user touched in screen coordinates
-     * @param touchY the y coordinate the user touched in screen coordinates
+     * @param touchX the x coordinate the user touched in DragLayer coordinates
+     * @param touchY the y coordinate the user touched in DragLayer coordinates
      */
     void move(int touchX, int touchY) {
-        WindowManager.LayoutParams lp = mLayoutParams;
-        lp.x = touchX - mRegistrationX;
-        lp.y = touchY - mRegistrationY;
-        mWindowManager.updateViewLayout(this, lp);
+        DragLayer.LayoutParams lp = mLayoutParams;
+        lp.x = touchX - mRegistrationX + (int) mOffsetX;
+        lp.y = touchY - mRegistrationY + (int) mOffsetY;
+        mDragLayer.requestLayout();
     }
 
     void remove() {
-        mWindowManager.removeView(this);
+        post(new Runnable() {
+            public void run() {
+                mDragLayer.removeView(DragView.this);
+            }
+        });
+    }
+
+    int[] getPosition(int[] result) {
+        DragLayer.LayoutParams lp = mLayoutParams;
+        if (result == null) result = new int[2];
+        result[0] = lp.x;
+        result[1] = lp.y;
+        return result;
     }
 }
 
