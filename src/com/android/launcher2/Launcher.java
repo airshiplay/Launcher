@@ -95,7 +95,7 @@ public final class Launcher extends Activity
     static final String TAG = "Launcher";
     static final boolean LOGD = false;
 
-    static final boolean PROFILE_STARTUP = false;
+    static final boolean PROFILE_STARTUP = true;
     static final boolean DEBUG_WIDGETS = false;
     static final boolean DEBUG_USER_INTERFACE = false;
 
