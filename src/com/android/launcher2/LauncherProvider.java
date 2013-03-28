@@ -16,48 +16,47 @@
 
 package com.android.launcher2;
 
-import android.app.SearchManager;
-import android.appwidget.AppWidgetHost;
-import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProviderInfo;
-import android.content.ContentProvider;
-import android.content.Context;
-import android.content.ContentValues;
-import android.content.Intent;
-import android.content.ComponentName;
-import android.content.ContentUris;
-import android.content.ContentResolver;
-import android.content.res.Resources;
-import android.content.res.XmlResourceParser;
-import android.content.res.TypedArray;
-import android.content.pm.PackageManager;
-import android.content.pm.ActivityInfo;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
-import android.database.sqlite.SQLiteQueryBuilder;
-import android.database.Cursor;
-import android.database.SQLException;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
-import android.util.Xml;
-import android.util.AttributeSet;
-import android.net.Uri;
-import android.text.TextUtils;
-import android.provider.Settings;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
-//import com.android.internal.util.XmlUtils;
-import com.android.launcher2.LauncherSettings.Favorites;
+import android.app.SearchManager;
+import android.appwidget.AppWidgetHost;
+import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProviderInfo;
+import android.content.ComponentName;
+import android.content.ContentProvider;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.content.res.XmlResourceParser;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.sqlite.SQLiteStatement;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.Settings;
+import android.text.TextUtils;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.util.Xml;
 
 import com.airshiplay.launcher.R;
+import com.android.internal.util.XmlUtils;
+import com.android.launcher2.LauncherSettings.Favorites;
 
 public class LauncherProvider extends ContentProvider {
     private static final String TAG = "Launcher.LauncherProvider";
@@ -634,7 +633,7 @@ public class LauncherProvider extends ContentProvider {
             try {
                 XmlResourceParser parser = mContext.getResources().getXml(R.xml.default_workspace);
                 AttributeSet attrs = Xml.asAttributeSet(parser);
-//                XmlUtils.beginDocument(parser, TAG_FAVORITES);
+                XmlUtils.beginDocument(parser, TAG_FAVORITES);
 
                 final int depth = parser.getDepth();
 
