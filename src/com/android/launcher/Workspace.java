@@ -387,8 +387,9 @@ public class Workspace extends ViewGroup implements DropTarget, DragSource, Drag
     @Override
     public void computeScroll() {
         if (mScroller.computeScrollOffset()) {
-        	setScrollX(mScroller.getCurrX());//mScrollX = mScroller.getCurrX();
-            setScrollY(mScroller.getCurrY());// mScrollY = mScroller.getCurrY();
+//        	setScrollX(mScroller.getCurrX());//mScrollX = mScroller.getCurrX();
+//          setScrollY(mScroller.getCurrY());// mScrollY = mScroller.getCurrY();
+            scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
             updateWallpaperOffset();
             postInvalidate();
         } else if (mNextScreen != INVALID_SCREEN) {
